@@ -36,4 +36,7 @@ interface PHPExcel_Reader_IReadFilter
      * @return   boolean
      */
     public function readCell($column, $row, $worksheetName = '');
+    public function stopReadingRowAfter($columnIndex);
+    public function stopReadingSheetAfter($rowIndex);
+    public function stopReadingBookAfter($workSheetIndex);
 }

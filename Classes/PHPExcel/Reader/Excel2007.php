@@ -791,20 +791,22 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
 
                             if ($xmlSheet && $xmlSheet->sheetData && $xmlSheet->sheetData->row) {
                                 foreach ($xmlSheet->sheetData->row as $row) {
+                                    $rowIndex = intval($row["r"]);
+
                                     if ($row["ht"] && !$this->readDataOnly) {
-                                        $docSheet->getRowDimension(intval($row["r"]))->setRowHeight(floatval($row["ht"]));
+                                        $docSheet->getRowDimension($rowIndex)->setRowHeight(floatval($row["ht"]));
                                     }
                                     if (self::boolean($row["hidden"]) && !$this->readDataOnly) {
-                                        $docSheet->getRowDimension(intval($row["r"]))->setVisible(false);
+                                        $docSheet->getRowDimension($rowIndex)->setVisible(false);
                                     }
                                     if (self::boolean($row["collapsed"])) {
-                                        $docSheet->getRowDimension(intval($row["r"]))->setCollapsed(true);
+                                        $docSheet->getRowDimension($rowIndex)->setCollapsed(true);
                                     }
                                     if ($row["outlineLevel"] > 0) {
-                                        $docSheet->getRowDimension(intval($row["r"]))->setOutlineLevel(intval($row["outlineLevel"]));
+                                        $docSheet->getRowDimension($rowIndex)->setOutlineLevel(intval($row["outlineLevel"]));
                                     }
                                     if ($row["s"] && !$this->readDataOnly) {
-                                        $docSheet->getRowDimension(intval($row["r"]))->setXfIndex(intval($row["s"]));
+                                        $docSheet->getRowDimension($rowIndex)->setXfIndex(intval($row["s"]));
                                     }
 
                                     foreach ($row->c as $c) {
@@ -812,10 +814,10 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                                         $cellDataType         = (string) $c["t"];
                                         $value                = null;
                                         $calculatedValue     = null;
+                                        $coordinates = PHPExcel_Cell::coordinateFromString($r);
 
                                         // Read cell?
                                         if ($this->getReadFilter() !== null) {
-                                            $coordinates = PHPExcel_Cell::coordinateFromString($r);
 
                                             if (!$this->getReadFilter()->readCell($coordinates[0], $coordinates[1], $docSheet->getTitle())) {
                                                 continue;
@@ -922,7 +924,19 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                                             $cell->setXfIndex(isset($styles[intval($c["s"])]) ?
                                                 intval($c["s"]) : 0);
                                         }
+
+                                        if ($this->getReadFilter() && $this->getReadFilter()->stopReadingRowAfter($coordinates[0])) {
+                                            break;
+                                        }
                                     }
+
+                                    if ($this->getReadFilter() && $this->getReadFilter()->stopReadingSheetAfter($rowIndex)) {
+                                        break;
+                                    }
+                                }
+
+                                if ($this->getReadFilter() && $this->getReadFilter()->stopReadingBookAfter($sheetId)) {
+                                    break;
                                 }
                             }
 
