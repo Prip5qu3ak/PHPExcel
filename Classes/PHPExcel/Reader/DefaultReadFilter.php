@@ -48,4 +48,19 @@ class PHPExcel_Reader_DefaultReadFilter implements PHPExcel_Reader_IReadFilter
     {
         return true;
     }
+
+    public function stopReadingRowAfter($columnIndex)
+    {
+        return false;
+    }
+
+    public function stopReadingSheetAfter($rowIndex)
+    {
+        return false;
+    }
+
+    public function stopReadingBookAfter($workSheetIndex)
+    {
+        return false;
+    }
 }
