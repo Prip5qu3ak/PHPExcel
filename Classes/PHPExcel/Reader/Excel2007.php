@@ -902,10 +902,6 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                                             $cell->setXfIndex(isset($styles[intval($c["s"])]) ?
                                                 intval($c["s"]) : 0);
                                         }
-
-                                        if ($this->getReadFilter() && $this->getReadFilter()->stopReadingRowAfter($coordinates[0])) {
-                                            break;
-                                        }
                                     }
 
                                     if ($this->getReadFilter() && $this->getReadFilter()->stopReadingSheetAfter($rowIndex)) {
